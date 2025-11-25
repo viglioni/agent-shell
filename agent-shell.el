@@ -1434,10 +1434,13 @@ by default."
          ;; Apply markdown overlay to body.
          (when-let ((body-start (map-nested-elt range '(:body :start)))
                     (body-end (map-nested-elt range '(:body :end))))
-           (narrow-to-region body-start body-end)
-           (let ((markdown-overlays-highlight-blocks agent-shell-highlight-blocks))
-             (markdown-overlays-put))
-           (widen))
+           (when (and (integer-or-marker-p body-start)
+                      (integer-or-marker-p body-end)
+                      (< body-start body-end))
+             (narrow-to-region body-start body-end)
+             (let ((markdown-overlays-highlight-blocks agent-shell-highlight-blocks))
+               (markdown-overlays-put))
+             (widen)))
          ;;
          ;; Note: For now, we're skipping applying markdown overlays
          ;; on left labels as they currently carry propertized text
@@ -1446,10 +1449,13 @@ by default."
          ;; Apply markdown overlay to right label.
          (when-let ((label-right-start (map-nested-elt range '(:label-right :start)))
                     (label-right-end (map-nested-elt range '(:label-right :end))))
-           (narrow-to-region label-right-start label-right-end)
-           (let ((markdown-overlays-highlight-blocks agent-shell-highlight-blocks))
-             (markdown-overlays-put))
-           (widen)))
+           (when (and (integer-or-marker-p label-right-start)
+                      (integer-or-marker-p label-right-end)
+                      (< label-right-start label-right-end))
+             (narrow-to-region label-right-start label-right-end)
+             (let ((markdown-overlays-highlight-blocks agent-shell-highlight-blocks))
+               (markdown-overlays-put))
+             (widen))))
        (run-hook-with-args 'agent-shell-section-functions range)))))
 
 (defun agent-shell-toggle-logging ()
